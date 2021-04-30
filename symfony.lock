@@ -1,4 +1,7 @@
 {
+    "bluemmb/faker-picsum-photos-provider": {
+        "version": "v2.0"
+    },
     "composer/package-versions-deprecated": {
         "version": "1.11.99.1"
     },
@@ -100,6 +103,9 @@
     "egulias/email-validator": {
         "version": "3.1.1"
     },
+    "fakerphp/faker": {
+        "version": "v1.14.1"
+    },
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.3"
     },
@@ -111,6 +117,9 @@
     },
     "laminas/laminas-zendframework-bridge": {
         "version": "1.1.1"
+    },
+    "liorchamla/faker-prices": {
+        "version": "2.0.0"
     },
     "monolog/monolog": {
         "version": "2.2.0"
