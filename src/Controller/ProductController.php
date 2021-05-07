@@ -4,16 +4,15 @@ namespace App\Controller;
 
 use App\Entity\Product;
 use App\Form\ProductType;
-use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
+use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ProductController extends AbstractController
 {
@@ -57,20 +56,15 @@ class ProductController extends AbstractController
     /**
      * @Route("/admin/product/{id}/edit", name="product_edit")
      */
-    public function edit($id, ProductRepository $productRepository, Request $request, EntityManagerInterface $em, ValidatorInterface $validator)
-    {
-
-
+    public function edit($id, ValidatorInterface $validator , ProductRepository $productRepository, Request $request, EntityManagerInterface $em)
+   {
         $product = $productRepository->find($id);
 
         $form = $this->createForm(ProductType::class, $product);
 
-        //$form->setData($product);
-
         $form->handleRequest($request);
         
-        if ($form->isSubmitted()) {
-            dd($form->getData());
+        if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
            
             return $this->redirectToRoute('product_show', [
@@ -85,7 +79,6 @@ class ProductController extends AbstractController
             'product' => $product,
             'formView' => $formView
         ]); 
-
     }
 
     /**
@@ -99,7 +92,7 @@ class ProductController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $product->setSlug(strtolower($slugger->slug($product->getName())));
             
             $em->persist($product);
