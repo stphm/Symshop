@@ -50,16 +50,15 @@ class ProductType extends AbstractType
                 'label' => 'Image du produit',
                 'attr' => ['placeholder' => 'Tapez une URL d\'image']              
             ])
-            ->add('category', EntityType::class, [
-                'label' => 'catégorie',
-                'placeholder' => '-- Choisir une catégorie',
-                'class' => Category::class,
-                'choice_label' => function (Category $category) {
-                    return strtoupper($category->getName());
-                }
+            
+         ->add('category', EntityType::class, [
+             'label' => 'catégorie',
+             'placeholder' => '-- Choisir une catégorie',
+             'class' => Category::class,
+             'choice_label' => function (Category $category) {
+                 return strtoupper($category->getName());
+             }
             ]);
-
-
     }
 
     public function configureOptions(OptionsResolver $resolver)
