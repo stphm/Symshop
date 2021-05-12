@@ -6,12 +6,16 @@ use App\Entity\Category;
 use App\Form\CategoryType;
 use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CategoryController extends AbstractController
 {
@@ -23,7 +27,7 @@ class CategoryController extends AbstractController
     }
 
 
-    public function renderMenuList() 
+    public function renderMenuList()
     {
         // A. Aller chercher les catégories dans la BDD (ripository)
         $categories = $this->categoryRepository->findAll();
@@ -33,6 +37,7 @@ class CategoryController extends AbstractController
             'categories' => $categories
         ]);
     }
+
     /**
      * @Route("/admin/category/create", name="category_create")
      */
@@ -45,12 +50,12 @@ class CategoryController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-           $category->setSlug(strtolower($slugger->slug($category->getName())));
+            $category->setSlug(strtolower($slugger->slug($category->getName())));
 
-           $em->persist($category);
-           $em->flush();
+            $em->persist($category);
+            $em->flush();
 
-           return $this->redirectToRoute('homepage');
+            return $this->redirectToRoute('homepage');
         }
 
         $formView = $form->createView();
@@ -62,11 +67,16 @@ class CategoryController extends AbstractController
     /**
      * @Route("/admin/category/{id}/edit", name="category_edit")
      */
-    public function edit($id, CategoryRepository $categoryRepository, Request $request, EntityManagerInterface $em, UrlGeneratorInterface $urlGenerator)
+    public function edit($id,CategoryRepository $categoryRepository,Request $request,
+        EntityManagerInterface $em, Security $security) 
     {
         $category = $categoryRepository->find($id);
 
-        $form = $this->createForm(CategoryType::class,$category);
+        if(!$category) {
+            throw new NotFoundHttpException("Cette catégorie n'existe pas !");
+        }
+
+        $form = $this->createForm(CategoryType::class, $category);
 
         $form->handleRequest($request);
 
@@ -75,7 +85,7 @@ class CategoryController extends AbstractController
 
             return $this->redirectToRoute('homepage');
         }
-        
+
         $formView = $form->createView();
 
         return $this->render('category/edit.html.twig', [
@@ -84,7 +94,7 @@ class CategoryController extends AbstractController
         ]);
     }
 
-    public function index():Response
+    public function index()
     {
         $this->render('category/index.html.twig');
     }

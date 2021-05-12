@@ -17,9 +17,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class ProductController extends AbstractController
 {
     /**
-     * @Route("/category/{slug}", name="product_category")
+     * @Route("/{slug}", name="product_category", priority=-1)
      */
-    public function catégory($slug, CategoryRepository $categoryRepository): Response
+    public function category($slug, CategoryRepository $categoryRepository): Response
     {
         $category = $categoryRepository->findOneBy([
             'slug' => $slug
@@ -29,10 +29,8 @@ class ProductController extends AbstractController
             throw $this->createNotFoundException("La catégorie demandé n'existe pas");
         }
 
-        return $this->render('product/category.html.twig', [
-            'slug' => $slug,
-            'category' => $category
-        ]);
+        return $this->render('product/category.html.twig', ['slug' => $slug,'category' => $category]);
+
     }
 
     /**
