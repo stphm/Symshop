@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Cart\CartService;
+use App\Form\CartConfirmationType;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping\Id;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -63,13 +64,15 @@ class CartController extends AbstractController
     public function show()
     {
 
+        $form = $this->createForm(CartConfirmationType::class);
        $detailedCart = $this->cartService->getDetailedCartItems();
 
        $total = $this->cartService->getTotal();
 
         return $this->render('cart/index.html.twig', [
             'items' => $detailedCart,
-            'total' => $total
+            'total' => $total,
+            'confirmationForm' => $form->createView()
         ]);
     }
 
@@ -105,6 +108,9 @@ class CartController extends AbstractController
         $this->cartService->decrement($id);
 
         $this->addFlash("success", "Le produit a bien été décrémenté");
+
         return $this->redirectToRoute("cart_show");
     }
+
+   
 }
